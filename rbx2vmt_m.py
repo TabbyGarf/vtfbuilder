@@ -124,7 +124,11 @@ def process_material(mat_file):
 
                 vmt = os.path.join(out_dir, out_base + ".vmt")
                 create_vmt(vmt, f"rbx/{mat_name}/{sname}/{out_base}", alpha)
-
+                
+                # comment out to keep the pngs for other uses :)
+                os.remove(png) 
+                # :)
+                
                 local_count += 1
 
                 with lock:
