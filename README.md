@@ -30,19 +30,20 @@ Here is exactly how the code builds the texture:
 
 ## Usage
 
-1. Run `vtfbuilder.py` or use `python ./vtfbuilder.py` in a terminal
-1. **Select material(s)**:
+1. Download entire repo and have it in a folder
+2. Run `vtfbuilder.py` or use `python ./vtfbuilder.py` in a terminal
+3. **Select material(s)**:
    * Use `smoothplastic` if you just want the color 
    * Script lists all images in `material/`.
    * Type comma-separated names (without extension) or `all`.
    * Each selected material will be processed via `ThreadPoolExecutor`.
    * /!\ This means choosing to process one material at a time will be slower than selecting multiple at once
 
-3. **Select surface(s)** similarly.
+4. **Select surface(s)** similarly.
    * Use `smooth` if you want no overlay and just the tinted material.
-4. Let the script do its work
-5. Find results in `output/rbx/...`.
-6. Move the `rbx/`directory to your Source game's `materials` folder.
+5. Let the script do its work
+6. Find results in `output/rbx/...`.
+7. Move the `rbx/`directory to your Source game's `materials` folder.
 
 ---
 
