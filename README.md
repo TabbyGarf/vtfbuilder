@@ -31,7 +31,7 @@ Here is exactly how the code builds the texture:
 2. Run `vtfbuilder.py` or use `python ./vtfbuilder.py` in a terminal,   
    * add `--output-path "path/to/materials"` to extract directly to your materials folder
    * add `--keep-png (true/yes/1)` to keep the temporary pngs
-   * Example `vtfbuilder.py --keep-png 1 --output-path "D:\SteamLibrary\steamapps\common\GarrysMod\garrysmod\materials"`
+   * Example `vtfbuilder.py --keep-png 1 --output-path "D:\Steam\steamapps\common\GarrysMod\garrysmod\materials"`
 4. **Select material(s)**:
    * Use `smoothplastic` if you just want the color, `neon` will make the texture "glow" ($selfillum 1, no light emission.) 
    * Script lists all images in `material/`.
