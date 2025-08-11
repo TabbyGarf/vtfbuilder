@@ -3,14 +3,26 @@ import re
 import json
 import sys
 import subprocess
+import argparse
 from PIL import Image, ImageChops
+
+
+parser = argparse.ArgumentParser(description="Process materials with options for output path and keeping PNGs.")
+parser.add_argument("--output-path", type=str, default="output", help="Output directory path")
+parser.add_argument("--keep-png", type=lambda x: x.lower() in ['true', '1', 'yes'], default=False,
+                    help="Keep intermediate PNG files (true/false)")
+args = parser.parse_args()
+print("Keep PNG?", args.keep_png)
+print("Output path:", args.output_path)
 
 INPUT_COLORS = os.path.abspath("brickcolors.json")
 SURFACE_DIR = os.path.abspath("surface")
 MATERIAL_DIR = os.path.abspath("material")
-OUTPUT = os.path.abspath("output")
+OUTPUT = os.path.abspath(args.output_path)
 TEMP = os.path.abspath("temp")
 BIN_DIR = os.path.abspath("bin")
+
+KEEP_PNG = args.keep_png
 
 os.makedirs(OUTPUT, exist_ok=True)
 os.makedirs(TEMP, exist_ok=True)
@@ -25,23 +37,9 @@ def progbar(count, total, cur_file=""):
     sys.stdout.write('\r')
     os.system("cls")
 
-    bar_len = 10
-    full_blocks = ["|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\","|", "/", "—", "\\", "|", "/", "—","\\", "|", "/", "—","\\", "|", "/", "—","\\",]
-    num_steps = len(full_blocks) - 1  
-
-    total_progress = count / float(total) * bar_len
-    full_chars = int(total_progress)  
-    partial_progress = total_progress - full_chars
-    partial_char_index = int(round(partial_progress * num_steps))
-
-    bar = "#" * full_chars
-    if full_chars < bar_len:
-        bar += full_blocks[partial_char_index]
-        bar += " " * (bar_len - full_chars - 1)
-
     percent = round(100.0 * count / float(total), 1)
 
-    sys.stdout.write(f"|{bar}| {percent}% ({count}/{total})\nWriting {cur_file} ")
+    sys.stdout.write(f"{percent}% ({count}/{total})\nWriting {cur_file} ")
     sys.stdout.flush()
 
 def create_vmt(vmt_path, texture_path, alpha_value):
@@ -156,7 +154,9 @@ def process_material(mat_file):
                     global count
                     count += 1
                     progbar(count, total, f"rbx/{mat_name}/{sname}/" + out_base + "                              ")
-
+            
+            if not KEEP_PNG and os.path.exists(png):
+                os.remove(png)
             
 
             
