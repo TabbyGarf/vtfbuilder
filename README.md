@@ -47,13 +47,7 @@ Here is exactly how the code builds the texture:
 
 ---
 
-## Customization
 
-* **Add/edit colors** in `brickcolors.json`. Or extend loader to fetch from Python.
-* **Add materials/surfaces** by dropping `.png/.jpg` files into respective folders.
-* Define additional alpha tiers via `alpha_levels` list.
-* Tweak image resolution by changing `resize((512, 512))`.
-* Optionally adjust threading via `ThreadPoolExecutor(...)`.
 
 
 
