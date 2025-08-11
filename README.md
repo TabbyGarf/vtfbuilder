@@ -21,31 +21,37 @@ Here is exactly how the code builds the texture:
 ## Prerequisites
 
 * **Python 3**
-* **Pillow**
-  ```bash
-  pip install pillow
-  ```
+* **Pillow** (`pip install pillow`)
 * External tool **`vtfcmd`** (included in `bin/`)
 
 
 ## Usage
 
 1. Download entire repo and have it in a folder
-2. Run `vtfbuilder.py` or use `python ./vtfbuilder.py` in a terminal
-3. **Select material(s)**:
-   * Use `smoothplastic` if you just want the color 
+2. Run `vtfbuilder.py` or use `python ./vtfbuilder.py` in a terminal,   
+   * add `--output-path "path/to/materials"` to extract directly to your materials folder
+   * add `--keep-png (true/yes/1)` to keep the temporary pngs
+   * Example `vtfbuilder.py --keep-png 1 --output-path "D:\SteamLibrary\steamapps\common\GarrysMod\garrysmod\materials"`
+4. **Select material(s)**:
+   * Use `smoothplastic` if you just want the color, `neon` will make the texture "glow" ($selfillum 1, no light emission.) 
    * Script lists all images in `material/`.
    * Type comma-separated names (without extension) or `all`.
    * Each selected material will be processed via `ThreadPoolExecutor`.
    * /!\ This means choosing to process one material at a time will be slower than selecting multiple at once
 
-4. **Select surface(s)** similarly.
+5. **Select surface(s)** similarly.
    * Use `smooth` if you want no overlay and just the tinted material.
-5. Let the script do its work
-6. Find results in `output/rbx/...`.
-7. Move the `rbx/`directory to your Source game's `materials` folder.
+6. Let the script do its work
+7. Find results in `output/rbx/...`.
+8. Move the `rbx/`directory to your Source game's `materials` folder.
 
----
+## Size Estimation
+
+**Full: (All possible textures)**
+
+![formula](https://quicklatex.com/cache3/a9/ql_27b6b017f91c4216432ea58a89b28da9_l3.png)
+
+
 
 
 
