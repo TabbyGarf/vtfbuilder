@@ -18,7 +18,7 @@ os.makedirs(TEMP, exist_ok=True)
 env = os.environ.copy()
 env["PATH"] = BIN_DIR + os.pathsep + env["PATH"]
 
-alpha_levels = [1.0,0.5]
+l_alpha_levels = [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3]
 
 def progbar(count, total, cur_file=""):
 
@@ -41,16 +41,25 @@ def progbar(count, total, cur_file=""):
 
     percent = round(100.0 * count / float(total), 1)
 
-    sys.stdout.write(f"|{bar}| {percent}% ({count}/{total}) {cur_file} ")
+    sys.stdout.write(f"|{bar}| {percent}% ({count}/{total})\nWriting {cur_file} ")
     sys.stdout.flush()
 
 def create_vmt(vmt_path, texture_path, alpha_value):
+    is_neon = "neon" in texture_path.lower()
     with open(vmt_path, 'w') as vmt_file:
-        vmt_file.write(f'"LightmappedGeneric"\n{{\n')
-        vmt_file.write(f'    "$basetexture" "{texture_path}"\n')
-        if alpha_value < 1.0:
-            vmt_file.write(f'    "$translucent" 1\n')
-        vmt_file.write(f'}}\n')
+        if is_neon:
+            vmt_file.write(f'"UnlitGeneric"\n{{\n')
+            vmt_file.write(f'    "$basetexture" "{texture_path}"\n')
+            vmt_file.write(f'    "$surfaceprop" "glass"\n')
+            vmt_file.write(f'    "$selfillum" 1\n')
+            vmt_file.write(f'}}\n')
+        else:
+            vmt_file.write(f'"LightmappedGeneric"\n{{\n')
+            vmt_file.write(f'    "$basetexture" "{texture_path}"\n')
+            if alpha_value < 1.0:
+                vmt_file.write(f'    "$translucent" 1\n')
+                vmt_file.write(f'    "$alpha" {alpha_value:.6f}\n')
+            vmt_file.write(f'}}\n')
 
 colors = json.load(open(INPUT_COLORS))
 material_files = [f for f in os.listdir(MATERIAL_DIR)
@@ -80,6 +89,21 @@ if sel_surfs.lower() != 'all':
         if m.strip().lower() in surface_basenames]
 else:
     chosen_surfs = surface_files
+    
+# Display available alpha levels
+print("Available alpha levels:", l_alpha_levels)
+
+# Prompt user for selection
+sel_alphas = input("Enter alpha levels to process (comma-separated) or 'all': ").strip()
+
+if sel_alphas.lower() != 'all':
+    # Parse and validate user input
+    alpha_levels = [
+        float(a.strip()) for a in sel_alphas.split(',')
+        if a.strip().replace('.', '', 1).isdigit() and float(a.strip()) in l_alpha_levels
+    ]
+else:
+    alpha_levels = l_alpha_levels
 
 import concurrent.futures
 import threading
@@ -99,42 +123,43 @@ def process_material(mat_file):
         tint = Image.new("RGBA", (512, 512), (cr, cg, cb, ca))
         base_colored = ImageChops.multiply(tint, mat_img)
 
-        for alpha in alpha_levels:
-            for surf_file in chosen_surfs:
-                sname = re.sub(r'\W+', '', os.path.splitext(surf_file)[0].lower())
-                surf_img = Image.open(os.path.join(SURFACE_DIR, surf_file)).convert("RGBA").resize((512, 512))
-                combined = Image.alpha_composite(base_colored, surf_img)
+        for surf_file in chosen_surfs:
+            sname = re.sub(r'\W+', '', os.path.splitext(surf_file)[0].lower())
+            surf_img = Image.open(os.path.join(SURFACE_DIR, surf_file)).convert("RGBA").resize((512, 512))
+            combined = Image.alpha_composite(base_colored, surf_img)
 
-                out_dir = os.path.join(OUTPUT, "rbx", mat_name, sname)
-                os.makedirs(out_dir, exist_ok=True)
+            out_dir = os.path.join(OUTPUT, "rbx", mat_name, sname)
+            os.makedirs(out_dir, exist_ok=True)
 
-                out_base = f"{mat_name}_{cname}_{sname}"
-                png = os.path.join(TEMP, out_base + ".png")
-                combined.save(png)
+            out_base = f"{mat_name}_{cname}_{sname}"
+            png = os.path.join(TEMP, out_base + ".png")
+            combined.save(png)
 
-                cmd = [
-                    "vtfcmd",
-                    "-file", png,
-                    "-output", out_dir,
-                    "-rwidth", "512",
-                    "-rheight", "512",
-                    "-silent"
-                ]
-                subprocess.run(cmd, cwd=BIN_DIR, env=env, check=True, shell=True)
+            cmd = [
+                "vtfcmd",
+                "-file", png,
+                "-output", out_dir,
+                "-rwidth", "512",
+                "-rheight", "512",
+                "-silent"
+            ]
+            subprocess.run(cmd, cwd=BIN_DIR, env=env, check=True, shell=True)
 
-                vmt = os.path.join(out_dir, out_base + ".vmt")
+            for alpha in alpha_levels:
+                alpha_f = str(alpha)
+                alpha_f = alpha_f.replace('.', '_')
+                vmt_filename = f"{out_base}_{alpha_f}.vmt"
+                vmt = os.path.join(out_dir, vmt_filename)
                 create_vmt(vmt, f"rbx/{mat_name}/{sname}/{out_base}", alpha)
-                
-                # comment out to keep the pngs for other uses :)
-                os.remove(png) 
-                # :)
-                
                 local_count += 1
-
                 with lock:
                     global count
                     count += 1
                     progbar(count, total, f"rbx/{mat_name}/{sname}/" + out_base + "                              ")
+
+            
+
+            
     return local_count
 
 
