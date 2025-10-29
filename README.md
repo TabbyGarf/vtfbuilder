@@ -1,6 +1,6 @@
-# 🛠️ `VTFBuilder` — Three Layered Material (TLM) to VMT Batch Converter
+🛠️ VTFBuilder — Three Layered Material (TLM) to VMT Batch Converter
 
-Converts Three Layered Materials (TLMs) into Valve VMT/VTF textures for use in Source Engine mapping.
+Converts Three Layered Materials (TLMs) into Valve VMT/VTF textures for use in Source Engine mapping. (because RBXLX2VMF doesn't import custom RBX textures)
 Included: 
 * Roblox materials, with variants (mossy, rusty, ...)
 * Roblox surfaces (studs, inlets, universal, glue) (RETRO)
