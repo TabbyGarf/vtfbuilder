@@ -1,4 +1,4 @@
-# VTFBuilder — Three Layered Material (TLM) to VMT Batch Converter
+# VTFBuilder, a Three Layered Material (TLM) to VMT Batch Converter
 
 Converts Three Layered Materials (TLMs) into Valve VMT/VTF textures for use in Source Engine mapping. (because RBXLX2VMF doesn't import custom RBX textures)
 Included: 
