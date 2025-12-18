@@ -45,11 +45,6 @@ Here is exactly how the code builds the texture:
 7. Find results in `output/rbx/...`.
 8. Move the `rbx/`directory to your Source game's `materials` folder.
 
-## Size Estimation
-
-**Full: (All possible textures)**
-
-![formula](https://quicklatex.com/cache3/a9/ql_27b6b017f91c4216432ea58a89b28da9_l3.png)
 
 
 
